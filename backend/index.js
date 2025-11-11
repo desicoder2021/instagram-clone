@@ -6,14 +6,12 @@ import connectDB from "./config/db.js";
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
+import { app, server, io } from "./socket/socket.js";
 
 dotenv.config({});
 
 // Define the port
 const PORT = process.env.PORT || 8000;
-
-// Create an Express application
-const app = express();
 
 // Middleware setup
 app.use(express.json()); // pares JSON payloads
@@ -43,7 +41,7 @@ app.use("/api/v1/message", messageRoute);
 const listen = async () => {
   const conn = await connectDB();
   if (conn) {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       connectDB();
       console.log(`Server is running on ${PORT}`);
     });

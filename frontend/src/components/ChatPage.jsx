@@ -5,6 +5,7 @@ import { setSelectedUser } from "@/redux/authSlice";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { MessageCircleCode } from "lucide-react";
+import Messages from "./Messages";
 
 const ChatPage = () => {
   const { user, suggestedUsers, selectedUser } = useSelector(
@@ -58,7 +59,7 @@ const ChatPage = () => {
               <span>{selectedUser?.username}</span>
             </div>
           </div>
-          {/* <Messages selectedUser={selectedUser} /> */}
+          <Messages selectedUser={selectedUser} />
           <div className='flex items-center p-4 border-t border-gray-300'>
             <Input
               value={textMessage}
