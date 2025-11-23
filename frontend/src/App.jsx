@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
 
+// Router setup
 const browserRouter = createBrowserRouter([
   {
     path: "/",
