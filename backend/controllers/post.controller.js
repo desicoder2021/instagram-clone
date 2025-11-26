@@ -3,6 +3,7 @@ import cloudinary from "../utils/cloudinary.js";
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
 import { Comment } from "../models/comment.model.js";
+import { getReceiverSocketId } from "../socket/socket.js";
 
 export const addNewPost = async (req, res) => {
   try {
@@ -169,8 +170,25 @@ export const likePost = async (req, res) => {
     }
     // Like logic
     await post.updateOne({ $addToSet: { likes: likerId } });
+    await post.save();
 
     // Implement soket.io for real-time notification
+    const user = await User.findById(likerId).select("username profilePicture");
+    const postOwnerId = post.author.toString();
+    if (postOwnerId !== likerId) {
+      // emit notification only if liker and post owner are different
+      const notification = {
+        type: "like",
+        userId: likerId,
+        userDetails: user,
+        postId,
+        message: `${user.username} liked your post.`,
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+      if (postOwnerSocketId) {
+        io.to(postOwnerSocketId).emit("notification", notification);
+      }
+    }
 
     return res.status(200).json({
       message: "Post liked",
@@ -199,8 +217,25 @@ export const dislikePost = async (req, res) => {
     }
     // Like logic
     await post.updateOne({ $pull: { likes: likerId } });
+    await post.save();
 
     // Implement soket.io for real-time notification
+    const user = await User.findById(likerId).select("username profilePicture");
+    const postOwnerId = post.author.toString();
+    if (postOwnerId !== likerId) {
+      // emit notification only if liker and post owner are different
+      const notification = {
+        type: "dislike",
+        userId: likerId,
+        userDetails: user,
+        postId,
+        message: `${user.username} disliked your post.`,
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+      if (postOwnerSocketId) {
+        io.to(postOwnerSocketId).emit("notification", notification);
+      }
+    }
 
     return res.status(200).json({
       message: "Post disliked",

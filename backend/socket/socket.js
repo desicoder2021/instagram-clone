@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   // Handle user disconnection
-  socket.on("disconnection", () => {
+  socket.on("disconnect", () => {
     // Remove user from the map when they diconnet
     if (userId) {
       delete userSocketMap[userId];
